@@ -55,7 +55,7 @@ async def handle_router_query():
     with open('router_links.json', 'rb') as fp:
         try:
             old_data = pickle.load(fp)
-            data = json.loads(json.dumps(old_data))
+            data = json.loads(json.dumps(old_data.decode()))
 
         except EOFError:
             data = []
