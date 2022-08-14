@@ -66,7 +66,7 @@ async def handle_router_query():
 @app.post('/router/UPLOAD')
 async def handle_router_upload(link=Body(...)):
     try:
-        link = link.decode()
+        link = json.loads(link.decode())
     except:
         print(type(link))
 
@@ -96,7 +96,7 @@ async def handle_router_upload(link=Body(...)):
 @app.post('/router/DELETE')
 async def handle_router_delete(name=Body(...)):
     try:
-        name = name.decode()
+        name = json.loads(name.decode())
     except:
         print(type(name))
 
