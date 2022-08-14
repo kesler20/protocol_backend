@@ -53,15 +53,12 @@ def handle_create_endpoint(link=Body(...)):
 @app.get('/router/READ')
 async def handle_router_query():
     with open('router_links.json', 'rb') as fp:
-        try:
-            old_data = pickle.load(fp)
-            data = json.loads(json.dumps(old_data.decode()))
+        data = pickle.load(fp)
 
-        except EOFError:
-            data = []
-            data = json.loads(json.dumps(old_data))
-
-    print(data)
+    try:
+        data = json.loads(json.dumps(data))
+    except TypeError:
+        data = []
 
     return {'response': data}
 
