@@ -157,9 +157,12 @@ async def handle_read_food():
     with open('sofia-diet_food.json', 'rb') as fp:
         data = pickle.load(fp)
 
-    print(json.loads(json.dumps(data)))
+    try:
+        data = json.loads(json.dumps(data))
+    except TypeError:
+        data = []
 
-    return {'response': json.loads(json.dumps(data))}
+    return {'response': data}
 
 
 @app.post('/sofia-diet/meal/CREATE')
@@ -191,9 +194,12 @@ async def handle_meal_query():
     with open('sofia-diet_meal.json', 'rb') as fp:
         data = pickle.load(fp)
 
-    print(json.loads(json.dumps(data)))
+    try:
+        data = json.loads(json.dumps(data))
+    except TypeError:
+        data = []
 
-    return {'response': json.loads(json.dumps(data))}
+    return {'response': data}
 
 
 @app.get('/sofia-diet/diet/READ')
@@ -201,10 +207,12 @@ async def handle_meal_query():
     with open('sofia-diet_diet.json', 'rb') as fp:
         data = pickle.load(fp)
 
-    print(json.loads(json.dumps(data)))
+    try:
+        data = json.loads(json.dumps(data))
+    except TypeError:
+        data = []
 
-    return {'response': json.loads(json.dumps(data))}
-
+    return {'response': data}
 
 @app.post('/sofia-diet/diet/CREATE')
 async def handle_create_diet(diet=Body(...)):
