@@ -56,10 +56,15 @@ async def handle_router_query():
             old_data = pickle.load(fp)
         except EOFError:
             old_data = []
+    
+    try:
+        data = json.loads(json.dumps(old_data))
+    except TypeError:
+        data = json.loads(json.dumps(old_data.decode()))
 
-    print(json.loads(json.dumps(old_data)))
+    print(data)
 
-    return {'response': json.loads(json.dumps(old_data))}
+    return {'response': data}
 
 
 @app.post('/router/UPLOAD')
