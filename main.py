@@ -31,6 +31,7 @@ async def read_root():
 
 ###################################### ROUTER ENDPOINTS ################################
 
+
 @app.post('/router/CREATE')
 def handle_create_endpoint(link=Body(...)):
 
@@ -54,13 +55,11 @@ async def handle_router_query():
     with open('router_links.json', 'rb') as fp:
         try:
             old_data = pickle.load(fp)
+            data = json.loads(json.dumps(old_data))
+
         except EOFError:
-            old_data = []
-    
-    try:
-        data = json.loads(json.dumps(old_data))
-    except TypeError:
-        data = json.loads(json.dumps(old_data.decode()))
+            data = []
+            data = json.loads(json.dumps(old_data))
 
     print(data)
 
@@ -120,6 +119,8 @@ async def handle_router_delete(name=Body(...)):
     return {'response': 'okay'}
 
 ############################################### SOFIA - DIET ENDPOINTS ###################################
+
+
 @app.post('/sofia-diet/food/CREATE')
 async def handle_upload(food=Body(...)):
     final_data = []
