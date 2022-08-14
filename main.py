@@ -130,6 +130,11 @@ async def handle_router_delete(name=Body(...)):
 
 @app.post('/sofia-diet/food/CREATE')
 async def handle_upload(food=Body(...)):
+    try:
+        food = json.loads(food.decode())
+    except:
+        print(type(food))
+
     final_data = []
     with open('sofia-diet_food.json', 'rb') as fp:
         try:
@@ -167,6 +172,11 @@ async def handle_read_food():
 
 @app.post('/sofia-diet/meal/CREATE')
 async def handle_meal_upload(meal=Body(...)):
+    try:
+        meal = json.loads(meal.decode())
+    except:
+        print(type(meal))
+
     final_data = []
     with open('sofia-diet_meal.json', 'rb') as fp:
         try:
@@ -216,6 +226,10 @@ async def handle_meal_query():
 
 @app.post('/sofia-diet/diet/CREATE')
 async def handle_create_diet(diet=Body(...)):
+    try:
+        diet = json.loads(diet.decode())
+    except:
+        print(type(diet))
     final_data = []
     with open('sofia-diet_diet.json', 'rb') as fp:
         try:
