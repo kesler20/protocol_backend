@@ -65,6 +65,11 @@ async def handle_router_query():
 
 @app.post('/router/UPLOAD')
 async def handle_router_upload(link=Body(...)):
+    try:
+        link = link.decode()
+    except:
+        print(type(link))
+
     final_data = []
     with open('router_links.json', 'rb') as fp:
         try:
@@ -90,6 +95,11 @@ async def handle_router_upload(link=Body(...)):
 
 @app.post('/router/DELETE')
 async def handle_router_delete(name=Body(...)):
+    try:
+        name = name.decode()
+    except:
+        print(type(name))
+
     final_data = []
     with open('router_links.json', 'rb') as fp:
         try:
