@@ -270,8 +270,8 @@ async def handle_create_diagram(diagram=Body(...)):
     class_names = [object["data"]['objectName'] for object in meta_data]
     for object in meta_data:
 
-        print(object)
-        class_name = (object["data"]['objectName'],object["data"]['comment'])
+        print(object['data'])
+        class_name = (object["data"]['objectName'], object["data"]['comment'])
         methods = []
         properties = []
         for method in object["data"]["gridTable"]:
