@@ -224,6 +224,7 @@ async def handle_meal_query():
 
     return {'response': data}
 
+
 @app.post('/sofia-diet/diet/CREATE')
 async def handle_create_diet(diet=Body(...)):
     try:
@@ -250,3 +251,21 @@ async def handle_create_diet(diet=Body(...)):
     print(data)
 
     return {'response': 'okay '}
+
+
+@app.post('/draw-uml/CREATE')
+async def handle_create_diagram(diagram=Body(...)):
+    try:
+        diagram = json.loads(diagram.decode())
+    except:
+        print(type(diagram))
+
+    with open("file.txt","w") as f:
+        f.write(json.dumps(diagram))
+
+@app.get('/draw-uml/READ')
+async def handle_get_diagram():
+    file = ""
+    with open("file.txt","r") as f:
+        file = json.loads(f.read())
+    return {'response': file}
