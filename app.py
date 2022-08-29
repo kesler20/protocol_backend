@@ -1,11 +1,15 @@
 import pandas as pd
 # FastAPI imports
 from fastapi import FastAPI, Body, UploadFile, Depends, BackgroundTasks, Response, status
+from fastapi.responses import FileResponse
 from starlette.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, StreamingResponse
 from starlette.requests import Request
 import json
 import pickle
+
+from fast_prototyping.main import ClassBuilder
+from fast_prototyping.mainjs import JsClassBuilder
 
 app = FastAPI()
 origins = [
@@ -260,12 +264,52 @@ async def handle_create_diagram(diagram=Body(...)):
     except:
         print(type(diagram))
 
-    with open("file.txt","w") as f:
-        f.write(json.dumps(diagram))
+    meta_data = diagram[0]
+    final_class = ""
+    final_js_class = ""
+    class_names = [object["data"]['objectName'] for object in meta_data]
+    for object in meta_data:
 
-@app.get('/draw-uml/READ')
-async def handle_get_diagram():
-    file = ""
-    with open("file.txt","r") as f:
-        file = json.loads(f.read())
-    return {'response': file}
+        class_name = (object["data"]['objectName'],object["data"]['comment'])
+        methods = []
+        properties = []
+        for method in object["data"]["gridTable"]:
+            if method["signature"].find("()") == -1:
+                properties.append((method["signature"], method["type"]))
+            else:
+                methods.append(
+                    (method["signature"], method["comment"], method["type"]))
+
+        new_class = ClassBuilder(class_name, methods, properties)
+        final_class += new_class.check_types(class_names)
+        final_class += new_class.build_class_name()
+        final_class += new_class.build_constructor_head()
+        final_class += new_class.build_constructor_body()
+        final_class += new_class.build_class_methods()
+
+        new_js_class = JsClassBuilder(class_name, methods, properties)
+        final_js_class += new_js_class.build_class_name(
+            class_name[0] == class_names[0])
+        final_js_class += new_js_class.build_constructor_head()
+        final_js_class += new_js_class.build_constructor_body()
+        final_js_class += new_js_class.build_class_methods()
+
+        with open('file.py', "w") as f:
+            f.write(final_class)
+
+        with open('file.js', 'w') as f:
+            f.write(final_js_class)
+
+    return {"response", "files create successfully ✅"}
+
+
+@app.get('/draw-uml/python')
+def handle_get_python_file():
+    print("get python file called")
+    return FileResponse("file.py", media_type="text/x-python", filename="file.py")
+
+
+@app.get('/draw-uml/javascript')
+def handle_get_python_file():
+    print("get javascript file called")
+    return FileResponse("file.js", media_type="text/javascript", filename="file.js")

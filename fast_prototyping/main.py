@@ -19,6 +19,7 @@ class ClassBuilder(object):
         # and its class description
         comment = f"'''{self.class_name[1]}'''"
         return '''
+
 class {}(object):        
     {}
         '''.format(self.class_name[0], comment)
@@ -49,12 +50,12 @@ class {}(object):
             description = f"'''{description}'''"
             class_body += f'''
     
-    def {signature}(self) -> {return_type}:
+    def {signature[:signature.find("()")]}(self) -> {return_type}:
         {description}
         pass'''
         return class_body
 
-    def check_types(self) -> str:
+    def check_types(self, classes: 'list[str]') -> str:
         built_in_types = ["str", "int", "None", "float",
                           "int", "complex", "str", "list", "tuple", "bool"]
         # search for all the other types
@@ -63,35 +64,23 @@ class {}(object):
         for _, property_type in self.properties:
             if property_type in built_in_types:
                 pass
+            elif property_type in classes:
+                pass
             else:
                 other_types.append(property_type)
+        for _, __, method_types in self.methods:
+            if method_types in built_in_types:
+                pass
+            elif method_types in classes:
+                pass
+            else:
+                other_types.append(method_types)
         for property_type in other_types:
             new_classes += f'''
+
 class {property_type}(object):
     pass            
-    
     '''
         return new_classes
-
-
-if __name__ == "__main__":
-    # generate the user input
-    methods = [("foo", "this is the description of foo", "str"), ("fizz",
-                                                                  "this is the description of fizz", "str"), ("buzz", "this is the description of buzz", "int")]
-    class_name = ('BuiltClassName',
-                  "This is a class which is built using the ClassBuilder")
-    properties = [("client", "Client"),
-                  ("subscription", "SubscriptionModel"), ("status", "str")]
-    new_class = ClassBuilder(class_name, methods, properties)
-    final_class = ""
-    final_class += new_class.check_types()
-    final_class += new_class.build_class_name()
-    final_class += new_class.build_constructor_head()
-    final_class += new_class.build_constructor_body()
-    final_class += new_class.build_class_methods()
-
-    with open('file.py', "w") as f:
-        f.write(final_class)
-
 
 # TODO: implement parameters for functions and default values for those parameters

@@ -7,21 +7,29 @@ class UserInputClassifier(object):
         self.signatures = signatures
 
 
-class ClassBuilder(object):
+class JsClassBuilder(object):
 
     def __init__(self, class_name, methods, properties) -> None:
         self.class_name = class_name
         self.methods = methods
         self.properties = properties
 
-    def build_class_name(self) -> str:
+    def build_class_name(self,first_class_in_programme: bool) -> str:
         # the class name is a tuple with a name of the class
         # and its class description
-        return '''
+        if first_class_in_programme:
+            return '''
 /*
 * {}
 */
 export default class {} {}'''.format(self.class_name[1], self.class_name[0], "{")
+        else:
+            return '''
+/*
+* {}
+*/
+export class {} {}'''.format(self.class_name[1], self.class_name[0], "{")
+
 
     def build_constructor_head(self) -> str:
         # constructor is a collection of tuples with the name of the method and each type
@@ -58,9 +66,10 @@ export default class {} {}'''.format(self.class_name[1], self.class_name[0], "{"
     */
     {}() {}
         return;
-    {}'''.format(description, signature, "{","}")
+    {}'''.format(description, signature[:signature.find('()')], "{","}")
         return class_body + '''
-}'''
+}
+'''
 
 if __name__ == "__main__":
     # generate the user input
@@ -70,7 +79,7 @@ if __name__ == "__main__":
                   "This is a class which is built using the ClassBuilder")
     properties = [("client", "str"),
                   ("subscription", "str"), ("status", "str")]
-    new_class = ClassBuilder(class_name, methods, properties)
+    new_class = JsClassBuilder(class_name, methods, properties)
     final_class = ""
     final_class += new_class.build_class_name()
     final_class += new_class.build_constructor_head()

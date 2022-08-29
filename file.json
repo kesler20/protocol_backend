@@ -1,0 +1,51 @@
+[
+  [
+    {
+      "id": "node-1",
+      "type": "umlDiagram",
+      "position": { "x": 211, "y": 117 },
+      "data": {
+        "objectName": "thi",
+        "color": "rgb(147, 54, 167)",
+        "gridTable": [
+          { "visibility": "+", "signature": "th", "type": "int" },
+          { "visibility": "+", "signature": "ppp", "type": "str" },
+          { "visibility": "+", "signature": "l", "type": "bool" }
+        ],
+        "connection": false
+      },
+      "width": 500,
+      "height": 220,
+      "selected": true,
+      "positionAbsolute": { "x": 211, "y": 117 },
+      "dragging": false
+    },
+    {
+      "id": "node-2",
+      "type": "umlDiagram",
+      "position": { "x": 1048, "y": 346 },
+      "data": {
+        "objectName": "Peop",
+        "color": "rgb(101, 123, 54)",
+        "gridTable": [
+          { "visibility": "+", "signature": "lpo", "type": "None" },
+          { "visibility": "+", "signature": "pirave", "type": "thi" }
+        ]
+      },
+      "width": 500,
+      "height": 169,
+      "selected": false,
+      "positionAbsolute": { "x": 1048, "y": 346 },
+      "dragging": false
+    }
+  ],
+  [
+    {
+      "source": "node-2",
+      "sourceHandle": "150aundefined",
+      "target": "node-1",
+      "targetHandle": "100bundefined",
+      "id": "reactflow__edge-node-2150aundefined-node-1100bundefined"
+    }
+  ]
+]
