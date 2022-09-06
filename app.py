@@ -305,6 +305,6 @@ def handle_get_python_file():
 
 
 @app.get('/draw-uml/javascript')
-def handle_get_python_file():
+def handle_get_javascript_file():
     print("get javascript file called")
     return FileResponse("file.js", media_type="text/javascript", filename="file.js")
