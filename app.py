@@ -298,13 +298,12 @@ async def handle_create_diagram(diagram=Body(...)):
     return {"response", "files create successfully ✅"}
 
 
-@app.get('/draw-uml/python')
+@app.get('/draw-uml/python_file')
 def handle_get_python_file():
     print("get python file called")
     return FileResponse("file.py", media_type="text/x-python", filename="file.py")
 
-
-@app.get('/draw-uml/javascript')
+@app.get('/draw-uml/javascript_file')
 def handle_get_javascript_file():
     print("get javascript file called")
     return FileResponse("file.js", media_type="text/javascript", filename="file.js")
