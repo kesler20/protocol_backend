@@ -1,19 +1,11 @@
 
 
-class Dir(object):
+class ede(object):
     pass            
     
 
-class Tir(object):
-    pass            
-    
-
-class Thus(object):        
-    '''this si with all the sql that I am writing'''
+class Callclo(object):        
+    '''Object Description'''
         
-    def __init__(self, t: Dir) -> None:
-        self.t = t
-    
-    def emit(self) -> Tir:
-        '''emits the resource of the database'''
-        pass
+    def __init__(self, efefqe: ede) -> None:
+        self.efefqe = efefqe

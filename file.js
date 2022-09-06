@@ -1,16 +1,9 @@
 
 /*
-* this si with all the sql that I am writing
+* Object Description
 */
-export default class Thus {
-    constructor( t) {
-        this.t = t;
-    }
-    
-    /*
-    * emits the resource of the database
-    */
-    emit() {
-        return;
+export default class Callclo {
+    constructor( efefqe) {
+        this.efefqe = efefqe;
     }
 }
