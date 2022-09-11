@@ -7,15 +7,12 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from starlette.requests import Request
 import json
 import pickle
-
 from fast_prototyping.main import ClassBuilder
 from fast_prototyping.mainjs import JsClassBuilder
+import os
 
 app = FastAPI()
 origins = [
-    "http://localhost:3000",
-    "https://localhost:3000",
-    "http://0.0.0.0:3000",
     "*"
 ]
 
@@ -27,14 +24,12 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-
 @app.get("/", tags=["root"])
 async def read_root():
     response = RedirectResponse(url='/docs')
     return response
 
 ###################################### ROUTER ENDPOINTS ################################
-
 
 @app.post('/router/CREATE')
 def handle_create_endpoint(link=Body(...)):
@@ -65,7 +60,6 @@ async def handle_router_query():
         data = []
 
     return {'response': data}
-
 
 @app.post('/router/UPLOAD')
 async def handle_router_upload(link=Body(...)):
@@ -292,7 +286,9 @@ async def handle_create_diagram(diagram=Body(...)):
         final_js_class += new_js_class.build_constructor_head()
         final_js_class += new_js_class.build_constructor_body()
         final_js_class += new_js_class.build_class_methods()
-
+        os.remove('file.py')
+        os.remove('file.js')
+        
         with open('file.py', "w") as f:
             f.write(final_class)
 
@@ -340,13 +336,12 @@ def handle_get_python_file():
     print("get python file called")
     return FileResponse("file.py", media_type="text/x-python", filename="file.py")
 
-@app.get('/draw-uml/python')
+@app.get('/draw-uml/python_file')
 def handle_get_python_file():
     print("get python file called")
     return FileResponse("file.py", media_type="text/x-python", filename="file.py")
 
-
-@app.get('/draw-uml/javascript')
-def handle_get_python_file():
+@app.get('/draw-uml/javascript_file')
+def handle_get_javascript_file():
     print("get javascript file called")
     return FileResponse("file.js", media_type="text/javascript", filename="file.js")
