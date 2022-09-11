@@ -301,6 +301,44 @@ async def handle_create_diagram(diagram=Body(...)):
 
     return {"response", "files create successfully ✅"}
 
+@app.post('/draw-uml/CREATE/test')
+async def handle_create_diagram(diagram=Body(...)):
+    try:
+        diagram = json.loads(diagram.decode())
+    except:
+        print(type(diagram))
+
+    meta_data = diagram[0]
+    final_class = ""
+    class_names = [object["data"]['objectName'] for object in meta_data]
+    for object in meta_data:
+        class_name = (object["data"]['objectName'],object["data"]['comment'])
+        methods = []
+        properties = []
+        for method in object["data"]["gridTable"]:
+            if method["signature"].find("()") == -1:
+                properties.append((method["signature"], method["type"]))
+            else:
+                methods.append(
+                    (method["signature"], method["comment"], method["type"]))
+
+        new_class = ClassBuilder(class_name, methods, properties)
+        final_class += new_class.check_types(class_names)
+        final_class += new_class.build_class_name()
+        final_class += new_class.build_constructor_head()
+        final_class += new_class.build_constructor_body()
+        final_class += new_class.build_class_methods()
+
+        with open('file.py', "w") as f:
+            f.write(final_class)
+
+    return {"response", "files create successfully ✅"}
+
+
+@app.get('/draw-uml/python')
+def handle_get_python_file():
+    print("get python file called")
+    return FileResponse("file.py", media_type="text/x-python", filename="file.py")
 
 @app.get('/draw-uml/python')
 def handle_get_python_file():
