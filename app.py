@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 # FastAPI imports
 from fastapi import FastAPI, Body, UploadFile, Depends, BackgroundTasks, Response, status
@@ -9,7 +10,8 @@ import json
 import pickle
 from fast_prototyping.main import ClassBuilder
 from fast_prototyping.mainjs import JsClassBuilder
-import os
+from fast_prototyping.test_main import TestClassBuilder
+
 
 app = FastAPI()
 origins = [
@@ -24,12 +26,14 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+
 @app.get("/", tags=["root"])
 async def read_root():
     response = RedirectResponse(url='/docs')
     return response
 
 ###################################### ROUTER ENDPOINTS ################################
+
 
 @app.post('/router/CREATE')
 def handle_create_endpoint(link=Body(...)):
@@ -60,6 +64,7 @@ async def handle_router_query():
         data = []
 
     return {'response': data}
+
 
 @app.post('/router/UPLOAD')
 async def handle_router_upload(link=Body(...)):
@@ -261,9 +266,10 @@ async def handle_create_diagram(diagram=Body(...)):
     meta_data = diagram[0]
     final_class = ""
     final_js_class = ""
+    final_test_class = ""
     class_names = [object["data"]['objectName'] for object in meta_data]
     for object in meta_data:
-        class_name = (object["data"]['objectName'],object["data"]['comment'])
+        class_name = (object["data"]['objectName'], object["data"]['comment'])
         methods = []
         properties = []
         for method in object["data"]["gridTable"]:
@@ -273,6 +279,7 @@ async def handle_create_diagram(diagram=Body(...)):
                 methods.append(
                     (method["signature"], method["comment"], method["type"]))
 
+        # CREATING THE PYTHON FILE
         new_class = ClassBuilder(class_name, methods, properties)
         final_class += new_class.check_types(class_names)
         final_class += new_class.build_class_name()
@@ -280,66 +287,58 @@ async def handle_create_diagram(diagram=Body(...)):
         final_class += new_class.build_constructor_body()
         final_class += new_class.build_class_methods()
 
+        # CREATING THE JAVASCRIPT FILE 
         new_js_class = JsClassBuilder(class_name, methods, properties)
         final_js_class += new_js_class.build_class_name(
             class_name[0] == class_names[0])
         final_js_class += new_js_class.build_constructor_head()
         final_js_class += new_js_class.build_constructor_body()
         final_js_class += new_js_class.build_class_methods()
-        os.remove('file.py')
-        os.remove('file.js')
-        
+
+        os.remove("file.py")
+        os.remove("file.js")
         with open('file.py', "w") as f:
             f.write(final_class)
 
         with open('file.js', 'w') as f:
             f.write(final_js_class)
 
-    return {"response", "files create successfully ✅"}
+        # CREATING THE PYTHON TEST FILE
+        new_class = TestClassBuilder(class_name, methods, properties)
 
-@app.post('/draw-uml/CREATE/test')
-async def handle_create_diagram(diagram=Body(...)):
-    try:
-        diagram = json.loads(diagram.decode())
-    except:
-        print(type(diagram))
+        if class_name[0] is class_names[0]:
+            final_test_class += new_class.check_types(class_names)
+            final_test_class += new_class.build_initial_import()
 
-    meta_data = diagram[0]
-    final_class = ""
-    class_names = [object["data"]['objectName'] for object in meta_data]
-    for object in meta_data:
-        class_name = (object["data"]['objectName'],object["data"]['comment'])
-        methods = []
-        properties = []
-        for method in object["data"]["gridTable"]:
-            if method["signature"].find("()") == -1:
-                properties.append((method["signature"], method["type"]))
-            else:
-                methods.append(
-                    (method["signature"], method["comment"], method["type"]))
+        final_test_class += new_class.build_class_name()
+        final_test_class += new_class.build_constructor_head()
+        final_test_class += new_class.build_constructor_body()
+        final_test_class += new_class.build_class_methods()
+        final_test_class += new_class.build_tearDown()
 
-        new_class = ClassBuilder(class_name, methods, properties)
-        final_class += new_class.check_types(class_names)
-        final_class += new_class.build_class_name()
-        final_class += new_class.build_constructor_head()
-        final_class += new_class.build_constructor_body()
-        final_class += new_class.build_class_methods()
+        if class_name[0] is class_names[-1]:
+            final_test_class += new_class.build_main_function_call()
 
-        with open('file.py', "w") as f:
-            f.write(final_class)
+        os.remove("test_file.py")
+        with open('test_file.py', "w") as f:
+            f.write(final_test_class)
+
 
     return {"response", "files create successfully ✅"}
 
 
-@app.get('/draw-uml/python')
-def handle_get_python_file():
-    print("get python file called")
-    return FileResponse("file.py", media_type="text/x-python", filename="file.py")
 
 @app.get('/draw-uml/python_file')
 def handle_get_python_file():
     print("get python file called")
     return FileResponse("file.py", media_type="text/x-python", filename="file.py")
+
+
+@app.get('/draw-uml/python_test_file')
+def handle_get_python_test_file():
+    print("get python test file called")
+    return FileResponse("test_file.py", media_type="text/x-python", filename="test_file.py")
+
 
 @app.get('/draw-uml/javascript_file')
 def handle_get_javascript_file():
