@@ -5,8 +5,10 @@ SESSION_ID = datetime.now()
 
 '''Week days should allow you to plan the activity in advance for the rest of the week'''
 
-
 # ------------- INITIALISE TABLE DATA -------------- #
+# initialise session
+session = { "session_id" : SESSION_ID }
+
 # all inters except the reps and sets should be floats
 # convert the amount into a float
 # from Monzo

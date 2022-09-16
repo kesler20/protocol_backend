@@ -56,8 +56,8 @@ class {}(object):
         return class_body
 
     def check_types(self, classes: 'list[str]') -> str:
-        built_in_types = ["str", "int", "None", "float",
-                          "int", "complex", "str", "list", "tuple", "bool"]
+        built_in_types = ["str", "None", "float","dict","set"
+                          "int", "complex", "list", "tuple", "bool"]
         # search for all the other types
         new_classes = ""
         other_types = []
