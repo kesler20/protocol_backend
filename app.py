@@ -11,7 +11,8 @@ import pickle
 from fast_prototyping.main import ClassBuilder
 from fast_prototyping.mainjs import JsClassBuilder
 from fast_prototyping.test_main import TestClassBuilder
-from automatic_db_update import db, SESSION_ID
+from sql_db_interface.database_client import DatabaseClient
+from sql_db_interface.database_interface import DatabaseInterface
 
 '''
 The application backend will take requrest from any client "see origins list set as *"
@@ -41,6 +42,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+client = DatabaseClient("my_routine.db")
+db = DatabaseInterface(client)
 
 
 @app.get("/", tags=["root"])
@@ -146,7 +150,16 @@ async def handle_get_javascript_file():
 
 @app.get('/sofia-api/workout')
 async def handle_get_javascript_file():
-    print(db.read_all_values_from_table("Workout"))
+    column_names = ["id","exercises_id","session_id","week_day"]
+    named_rows = [list(zip(column_names,row)) for row in db.read_all_values_from_table("Workout")]
 
-    return { "mgs" : "table read"}
+    data_frames :'list[pd.DataFrame]' = []
+    for row_id, row in enumerate(named_rows):
+        data_array = { row[0] : [row[1]] for row in named_rows[row_id]}
+        df = pd.DataFrame(data=data_array)
+        data_frames.append(df)
+    
+    main_df = pd.concat(data_frames)
+    main_df.set_index("id",inplace=True)
 
+    return main_df.to_json()

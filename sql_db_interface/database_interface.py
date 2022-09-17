@@ -53,6 +53,7 @@ class DatabaseInterface(object):
         * query - str, the query that will be performed to the database
         * key - str, the key that will be used to retrieve the values within the query
         if the key is left as "" this will be ignored 
+        if the key is set at "*" all the keys will be returned
 
         returns:
         * result - list, list of values'''
@@ -65,6 +66,9 @@ class DatabaseInterface(object):
 
             if key == "":
                 pass
+            elif key == "*":
+                for value in query_values:
+                    result.append(tuple([value[key] for key in value.keys()]))
             else:
                 for value in query_values:
                     result.append(value[key])

@@ -6,7 +6,7 @@ from sql_db_interface.database_client import DatabaseClient
 '''Week days should allow you to plan the activity in advance for the rest of the week'''
 
 SQL_DATETIME_FORMAT = '%Y-%m-%d %H:%M.%S'
-client = DatabaseClient(r"sql_db_interface\my_routine.db")
+client = DatabaseClient(r"my_routine.db")
 db = DatabaseInterface(client)
 SESSION_ID = datetime.now().strftime(SQL_DATETIME_FORMAT)
 
