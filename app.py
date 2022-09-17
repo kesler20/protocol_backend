@@ -11,7 +11,23 @@ import pickle
 from fast_prototyping.main import ClassBuilder
 from fast_prototyping.mainjs import JsClassBuilder
 from fast_prototyping.test_main import TestClassBuilder
+from automatic_db_update import db, SESSION_ID
 
+'''
+The application backend will take requrest from any client "see origins list set as *"
+Nevertheless, the endpoint architecture will take the following form
+
+/application-name/HTTP METHOD/custom
+
+In the case of sofiaApi the custom topic will refer to the name of the Table 
+of interest in lowercase
+'''
+
+# ---------------------------------------------------#
+#                                                    #
+#     INTIIALISE APPLICATION AND CONFIGURATIONS      #
+#                                                    #
+# ---------------------------------------------------#
 
 app = FastAPI()
 origins = [
@@ -37,6 +53,9 @@ async def read_root():
 #         APPLICATIONS ENDPOINTS      #
 #                                     #
 # ------------------------------------#
+
+#----------------- DRAW-UML ----------------#
+
 
 @app.post('/draw-uml/CREATE')
 async def handle_create_diagram(diagram=Body(...)):
@@ -69,7 +88,7 @@ async def handle_create_diagram(diagram=Body(...)):
         final_class += new_class.build_constructor_body()
         final_class += new_class.build_class_methods()
 
-        # CREATING THE JAVASCRIPT FILE 
+        # CREATING THE JAVASCRIPT FILE
         new_js_class = JsClassBuilder(class_name, methods, properties)
         final_js_class += new_js_class.build_class_name(
             class_name[0] == class_names[0])
@@ -102,23 +121,32 @@ async def handle_create_diagram(diagram=Body(...)):
         with open('test_file.py', "w") as f:
             f.write(final_test_class)
 
-
     return {"response", "files create successfully ✅"}
 
 
 @app.get('/draw-uml/python_file')
-def handle_get_python_file():
+async def handle_get_python_file():
     print("get python file called")
     return FileResponse("file.py", media_type="text/x-python", filename="file.py")
 
 
 @app.get('/draw-uml/python_test_file')
-def handle_get_python_test_file():
+async def handle_get_python_test_file():
     print("get python test file called")
     return FileResponse("test_file.py", media_type="text/x-python", filename="test_file.py")
 
 
 @app.get('/draw-uml/javascript_file')
-def handle_get_javascript_file():
+async def handle_get_javascript_file():
     print("get javascript file called")
     return FileResponse("file.js", media_type="text/javascript", filename="file.js")
+
+#-------------- SOFIA API----------------#
+
+
+@app.get('/sofia-api/workout')
+async def handle_get_javascript_file():
+    print(db.read_all_values_from_table("Workout"))
+
+    return { "mgs" : "table read"}
+

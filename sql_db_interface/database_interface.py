@@ -1,5 +1,11 @@
-from sql_db_interface.database_client import DatabaseClient
-from sql_db_interface.table_schema import SQL_STATEMENTS
+import os
+try:
+    from database_client import DatabaseClient
+    from table_schema import SQL_STATEMENTS
+except ModuleNotFoundError as err:
+    print(err)
+    from sql_db_interface.database_client import DatabaseClient
+    from sql_db_interface.table_schema import SQL_STATEMENTS
 
 '''The database interface should allow you to implement different database clients from a single Object
 The notes for the SQL queries can be found here 
@@ -104,12 +110,12 @@ class DatabaseInterface(object):
             print(sql_statement)
             client.connection.commit()
 
-    def create_values(self, columns: str, values: list[tuple], table_name: str) -> None:
+    def create_values(self, columns: str, values: tuple, table_name: str) -> None:
         '''Create the values
 
         params:
         * columns - tuple, a tuple containing the columns you want to insert into
-        * values - list, a list of tuples of values that you want to insert into the table
+        * values - tuple, tuples of values that you want to insert into the table
         * table_name - str, the name of the table which we want to modify'''
 
         sql_statement = f'''INSERT INTO {table_name} {columns} VALUES {values}'''
@@ -118,7 +124,21 @@ class DatabaseInterface(object):
             client.cursor.execute(sql_statement)
             client.connection.commit()
 
-    def read_all_values(self, column_name: str, table_name: str) -> list:
+    def read_all_values_from_table(self, table_name: str) -> 'list[tuple]':
+        '''Describe method'''
+
+        result = []
+        sql_statement = f'''SELECT * FROM {table_name}'''
+        with self.client as client:
+            values = client.cursor.execute(sql_statement)
+            client.connection.commit()
+            for value in values:
+                result.append(tuple([value[col]
+                              for col in list(value.keys())]))
+
+        return result
+
+    def read_all_values_from_column(self, column_name: str, table_name: str) -> list:
         '''Read all values within the database
 
         param:
@@ -179,7 +199,7 @@ class DatabaseInterface(object):
             client.cursor.execute(sql_statement)
             client.connection.commit()
 
-    def delete_value(self, table_name: str, primary_key: int,parent_id: str) -> None:
+    def delete_value(self, table_name: str, primary_key: int, parent_id: str) -> None:
         '''Delete a value from the table
 
         param:
@@ -209,6 +229,7 @@ class DatabaseInterface(object):
 
 
 if __name__ == "__main__":
+    os.remove("my_routine.db")
     client = DatabaseClient("my_routine.db")
     db = DatabaseInterface(client)
     for statement in SQL_STATEMENTS:

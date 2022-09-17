@@ -199,9 +199,9 @@ class Test_DatabaseInterface(unittest.TestCase):
                 print("from dataset:", data_2[1][0])
                 self.assertEqual(str(name["name"]), data_2[1][0])
 
-    def test_read_all_values(self) -> str:
+    def test_read_all_values_from_column(self) -> str:
         '''test reading all the values in the table'''
-        values = self.database_interface.read_all_values(
+        values = self.database_interface.read_all_values_from_column(
             "name", "test_table_child")
         expected_name_column = [value[0] for value in data_1]
         self.assertEqual(values, expected_name_column)
@@ -229,13 +229,14 @@ class Test_DatabaseInterface(unittest.TestCase):
 
     def test_delete_value(self) -> None:
         '''testing delete a value from the table'''
-        
-        self.database_interface.delete_value("test_table_child",2)
+
+        self.database_interface.delete_value("test_table_child", 2)
 
         with self.client as client:
-            values = client.cursor.execute('''SELECT name FROM test_table_child WHERE parent_id = 2''')
+            values = client.cursor.execute(
+                '''SELECT name FROM test_table_child WHERE parent_id = 2''')
             client.connection.commit()
-            self.assertEqual(values.fetchall(),[])
+            self.assertEqual(values.fetchall(), [])
 
     def tearDown(self):
         print("\n---------------------------TEAR DOWN---------------------------\n")

@@ -19,7 +19,7 @@ CREATE TABLE Meal(
 );''', '''
 
 CREATE TABLE Diet(
-    id INTEGER PRIMARY KEY AUTO  INCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     week_day VARCHAR(255) NOT NULL,
     session_id DATETIME NOT NULL,
     meals INT NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE Exercise(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     reps INT NOT NULL,
     sets INT NOT NULL,
-    weight FLOAT NOT NULL,
+    weight INT NOT NULL,
     name VARCHAR(255) NOT NULL
 );''', '''
 
@@ -45,9 +45,9 @@ CREATE TABLE Workout(
 CREATE TABLE Fitness(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     session_id DATETIME NOT NULL,
-    maintanace_calories FLOAT NOT NULL,
-    muscle_mass FLOAT NOT NULL,
-    body_fat FLOAT NOT NULL,
+    maintanace_calories INT NOT NULL,
+    muscle_mass INT NOT NULL,
+    body_fat INT NOT NULL,
     weight FLOAT NOT NULL
 );''', '''
 
