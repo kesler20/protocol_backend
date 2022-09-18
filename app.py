@@ -147,19 +147,38 @@ async def handle_get_javascript_file():
 
 #-------------- SOFIA API----------------#
 
+def convert_sql_table_to_df(column_names: 'list[str]',db: DatabaseInterface, table_name: str):
+    named_rows = [list(zip(column_names, row))
+                  for row in db.read_all_values_from_table(table_name)]
+
+    data_frames: 'list[pd.DataFrame]' = []
+    for row_id, row in enumerate(named_rows):
+        data_array = {row[0]: [row[1]] for row in named_rows[row_id]}
+        df = pd.DataFrame(data=data_array)
+        data_frames.append(df)
+
+    main_df = pd.concat(data_frames)
+    main_df.set_index("id", inplace=True)
+    print(f"--------------{table_name}--------------------")
+    print(main_df)
+    return main_df
 
 @app.get('/sofia-api/workout')
 async def handle_get_javascript_file():
-    column_names = ["id","exercises_id","session_id","week_day"]
-    named_rows = [list(zip(column_names,row)) for row in db.read_all_values_from_table("Workout")]
+    column_names = ["id", "exercises_id", "session_id", "week_day"]
+    main_df = convert_sql_table_to_df(column_names,db,"Workout")
+    return main_df.to_json()
 
-    data_frames :'list[pd.DataFrame]' = []
-    for row_id, row in enumerate(named_rows):
-        data_array = { row[0] : [row[1]] for row in named_rows[row_id]}
-        df = pd.DataFrame(data=data_array)
-        data_frames.append(df)
-    
-    main_df = pd.concat(data_frames)
-    main_df.set_index("id",inplace=True)
+@app.get('/sofia-api/exercise')
+async def handle_get_javascript_file():
+    column_names = ["id", "reps", "sets", "weight", "name"]
+    main_df = convert_sql_table_to_df(column_names,db,"Exercise")
+    return main_df.to_json()
 
+
+@app.get('/sofia-api/fitness')
+async def handle_get_javascript_file():
+    column_names = ["id", "session_id", "maintanace_calories",
+                    "muscle_mass", "body_fat", "weight"]
+    main_df = convert_sql_table_to_df(column_names,db,"Fitness")
     return main_df.to_json()

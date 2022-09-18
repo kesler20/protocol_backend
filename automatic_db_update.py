@@ -9,35 +9,35 @@ SQL_DATETIME_FORMAT = '%Y-%m-%d %H:%M.%S'
 client = DatabaseClient(r"my_routine.db")
 db = DatabaseInterface(client)
 SESSION_ID = datetime.now().strftime(SQL_DATETIME_FORMAT)
+# Get Exercise data
+exercises = pd.read_csv(r"C:\Users\Uchek\OneDrive\Documents\exercises.csv")
+exercises_names = list(exercises.keys())[1:]
+# [[weight] # [sets] # [reps]]
+exercises_values = [tuple(exercises[col]) for col in exercises_names]
 
+# Get Workout data
+workout = pd.read_csv(r"C:\Users\Uchek\OneDrive\Documents\training.csv")
+workout_exercises = list(workout.keys())[1:]
+# [ exercise_id : int, ....]
+workout_values = list(
+    map(lambda exercise: exercises_names.index(exercise), workout_exercises))
+
+# Fitness column data
+fitness = pd.read_excel(
+    r"C:\Users\Uchek\OneDrive\Documents\Gymnasium.xlsx")
+fitness_columns = list(fitness.keys())[1:]
+fitness_session_ids = [date.to_pydatetime().strftime(
+    SQL_DATETIME_FORMAT) for date in fitness["Date"]]
+    
+# [weight] # [body_fat] # [calories]
+fitness_values = [list(fitness[col]) for col in fitness_columns]
+# [(weight,body_fat,calories)]
+zipped_columns = []
+for row in fitness[fitness_columns[0]]:
+    zipped_columns.append(list(zip(*[fitness_values[colID]
+                                        for colID, col in enumerate(fitness_columns)])))
 
 if __name__ == "__main__":
-    # Get Exercise data
-    exercises = pd.read_csv(r"C:\Users\Uchek\OneDrive\Documents\exercises.csv")
-    exercises_names = list(exercises.keys())[1:]
-    # [[weight] # [sets] # [reps]]
-    exercises_values = [tuple(exercises[col]) for col in exercises_names]
-
-    # Get Workout data
-    workout = pd.read_csv(r"C:\Users\Uchek\OneDrive\Documents\training.csv")
-    workout_exercises = list(workout.keys())[1:]
-    # [ exercise_id : int, ....]
-    workout_values = list(
-        map(lambda exercise: exercises_names.index(exercise), workout_exercises))
-
-    # Fitness column data
-    fitness = pd.read_excel(
-        r"C:\Users\Uchek\OneDrive\Documents\Gymnasium.xlsx")
-    fitness_columns = list(fitness.keys())[1:]
-    fitness_session_ids = [date.to_pydatetime().strftime(
-        SQL_DATETIME_FORMAT) for date in fitness["Date"]]
-    # [weight] # [body_fat] # [calories]
-    fitness_values = [list(fitness[col]) for col in fitness_columns]
-    # [(weight,body_fat,calories)]
-    zipped_columns = []
-    for row in fitness[fitness_columns[0]]:
-        zipped_columns.append(list(zip(*[fitness_values[colID]
-                                            for colID, col in enumerate(fitness_columns)])))
 
     db.create_values("(session_id)", f'''("{SESSION_ID}")''', "Session")
 
