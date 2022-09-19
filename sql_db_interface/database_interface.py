@@ -239,7 +239,7 @@ if __name__ == "__main__":
     for statement in SQL_STATEMENTS:
         print(statement)
         db.run_query(statement, "")
-    os.system('xcopy my_routine.db "C:\Users\CBE-User 05\protocol\sofia"')
+    os.system(r'xcopy my_routine.db "C:\Users\CBE-User 05\protocol\sofia"')
 
 # TODO: enrich the design with proper ways to check if the database table exists etc
 # TODO: you can use the row factory to access all the values returned by the cursors
