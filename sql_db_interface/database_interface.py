@@ -240,6 +240,7 @@ if __name__ == "__main__":
         print(statement)
         db.run_query(statement, "")
     os.system(r'xcopy my_routine.db "C:\Users\CBE-User 05\protocol\sofia"')
+    os.remove(r"C:\Users\CBE-User 05\protocol\sofia\my_routine.db")
 
 # TODO: enrich the design with proper ways to check if the database table exists etc
 # TODO: you can use the row factory to access all the values returned by the cursors
