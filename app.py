@@ -1,3 +1,4 @@
+from models.diet import Food
 import os
 import pandas as pd
 # FastAPI imports
@@ -58,8 +59,26 @@ async def read_root():
 #                                     #
 # ------------------------------------#
 
-#----------------- DRAW-UML ----------------#
 
+#----------------- SOFIA DIET ---------------#
+
+@app.post('/sofia-diet/food/CREATE')
+async def handle_upload(food=Body(...)):
+    try:
+        food = json.loads(food.decode())
+    except:
+        print(type(food))
+    
+    food = Food(food["name"],[float(food["cost"])],[float(food["protein"])],[float(food["calories"])])
+    df1 = pd.read_excel("food.xlsx")
+    df2 = pd.DataFrame(data=food)
+    df3 = pd.concat([df1,df2])
+    df3.to_excel("food.xlsx",index=False)
+
+    return {'response': 'okay'}
+
+
+#----------------- DRAW-UML ----------------#
 
 @app.post('/draw-uml/CREATE')
 async def handle_create_diagram(diagram=Body(...)):
