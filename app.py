@@ -1,4 +1,4 @@
-from models.diet import Food
+from models.diet import Food, Meal
 import os
 import pandas as pd
 # FastAPI imports
@@ -68,17 +68,55 @@ async def handle_upload(food=Body(...)):
         food = json.loads(food.decode())
     except:
         print(type(food))
-    
-    food = Food(food["name"],[float(food["cost"])],[float(food["protein"])],[float(food["calories"])])
+
+    food = Food(food["name"], [float(food["cost"])], [
+                float(food["protein"])], [float(food["calories"])])
     df1 = pd.read_excel("food.xlsx")
     df2 = pd.DataFrame(data=food)
-    df3 = pd.concat([df1,df2])
-    df3.to_excel("food.xlsx",index=False)
+    df3 = pd.concat([df1, df2])
+    df3.to_excel("food.xlsx", index=False)
+
+    print("food created successfully ✅")
 
     return {'response': 'okay'}
 
 
+@app.get('/sofia-diet/food/READ')
+async def read_foods():
+    df1 = pd.read_excel("food.xlsx")
+    df2 = pd.DataFrame(data={"name": df1["Name"], "cost": df1["Cost (£)"],
+                       "calories": df1["calories (g/amount)"], "protein": df1["protein (g/amount)"]})
+    print(df2)
+    return df2.to_json()
+
+
+@app.post('/sofia-diet/meal/CREATE')
+async def handle_meal_upload(meal=Body(...)):
+    try:
+        meal: 'list[dict]' = json.loads(meal.decode())
+    except:
+        print(type(meal))
+
+    recipe = []  # a collection of foods
+    for food in meal:
+        if len(list(food.keys())) == 1:
+            pass
+        else:
+            recipe.append(Food(food["name"], float(food["cost"]),
+                               float(food["protein"]), float(food["calories"])))
+
+    meal = Meal(recipe, meal[-1]["name"])
+    print(meal)
+    # df1 = pd.read_excel("meal.xlsx")
+    # df2 = pd.DataFrame(data=meal)
+    # df3 = pd.concat([df1, df2])
+    # df3.to_excel("meal.xlsx", index=False)
+    # print("meal created successfully ✅")
+
+    return {'response': 'okay'}
+
 #----------------- DRAW-UML ----------------#
+
 
 @app.post('/draw-uml/CREATE')
 async def handle_create_diagram(diagram=Body(...)):
@@ -166,7 +204,8 @@ async def handle_get_javascript_file():
 
 #-------------- SOFIA API----------------#
 
-def convert_sql_table_to_df(column_names: 'list[str]',db: DatabaseInterface, table_name: str):
+
+def convert_sql_table_to_df(column_names: 'list[str]', db: DatabaseInterface, table_name: str):
     named_rows = [list(zip(column_names, row))
                   for row in db.read_all_values_from_table(table_name)]
 
@@ -182,16 +221,18 @@ def convert_sql_table_to_df(column_names: 'list[str]',db: DatabaseInterface, tab
     print(main_df)
     return main_df
 
+
 @app.get('/sofia-api/workout')
 async def handle_get_javascript_file():
     column_names = ["id", "exercises_id", "session_id", "week_day"]
-    main_df = convert_sql_table_to_df(column_names,db,"Workout")
+    main_df = convert_sql_table_to_df(column_names, db, "Workout")
     return main_df.to_json()
+
 
 @app.get('/sofia-api/exercise')
 async def handle_get_javascript_file():
     column_names = ["id", "reps", "sets", "weight", "name"]
-    main_df = convert_sql_table_to_df(column_names,db,"Exercise")
+    main_df = convert_sql_table_to_df(column_names, db, "Exercise")
     return main_df.to_json()
 
 
@@ -199,5 +240,5 @@ async def handle_get_javascript_file():
 async def handle_get_javascript_file():
     column_names = ["id", "session_id", "maintanace_calories",
                     "muscle_mass", "body_fat", "weight"]
-    main_df = convert_sql_table_to_df(column_names,db,"Fitness")
+    main_df = convert_sql_table_to_df(column_names, db, "Fitness")
     return main_df.to_json()

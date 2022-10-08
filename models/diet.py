@@ -55,6 +55,12 @@ class Meal(Nutrition):
     def __init__(self, recipe: 'list[Food]', name: str):
         self.recipe = recipe
         self.name = name
+    
+    def __repr__(self) -> str:
+        return f'''
+        {self.name}
+        {self.recipe}
+        '''
 
     @property
     def get_total(self):
