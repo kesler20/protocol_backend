@@ -24,13 +24,23 @@ class Food(object):
     Food the unit created by te user which is a dictionary containing the following values
     '''
 
-    def __init__(self, name: str,  cost: float,  protein: float,  calories: int) -> None:
+    def __init__(self, name: str,  cost: float,  protein: float,  calories: int, amount: int) -> None:
         self.name = name
         self.cost = cost
         self.protein = protein
         self.calories = calories
-        self.amount = BASE_AMOUNT
-
+        self.amount = BASE_AMOUNT if amount == "" else amount
+    
+    def __repr__(self) -> str:
+        return f'''
+        Food (
+            name: {self.name.upper()}
+            cost : {self.cost}
+            protein : {self.protein}
+            calories : {self.calories}
+            amount : {self.amount}        
+        )
+        '''
 
 class Meal(object):
     '''
@@ -43,6 +53,15 @@ class Meal(object):
         self.recipe = recipe
         self.total = calculate_total(recipe)
 
+    def __repr__(self) -> str:
+        return f'''
+        Meal (
+            name: {self.name.upper()}
+            total: {self.total}
+            recipe: {self.recipe}
+        )
+        '''
+
 
 class Diet(object):
     '''
@@ -54,7 +73,15 @@ class Diet(object):
         self.day = day
         self.meals = meals
         self.total = calculate_total(meals)
-
+    
+    def __repr__(self) -> str:
+        return f'''
+        Diet (
+            name: {self.day}
+            total: {self.total}
+            recipe: {self.meals}
+        )
+        '''
 
 if __name__ == "__main__":
     test_food1 = Food("food1", 0.1, 0.2, 20)

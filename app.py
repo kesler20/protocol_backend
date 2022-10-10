@@ -69,17 +69,20 @@ async def handle_upload(food=Body(...)):
     except:
         print(type(food))
 
-    food = Food(food["name"], [float(food["cost"])], [
-                float(food["protein"])], [int(food["calories"])])
+    # initialise food objects with base amount
+    food = Food(food["name"], float(food["cost"]),
+                float(food["protein"]), int(food["calories"]), "")
 
     df1 = pd.read_excel("food.xlsx")
-    df2 = pd.DataFrame(data=food)
+    df2 = pd.DataFrame(data={"Name": [food.name], "Cost (£)": [food.cost],
+                       "calories (g/amount)": [food.calories], "protein (g/amount)": [food.protein]})
     df3 = pd.concat([df1, df2])
     df3.to_excel("food.xlsx", index=False)
 
     print("food created successfully ✅")
 
     return {'response': 'okay'}
+
 
 @app.get('/sofia-diet/food/READ')
 async def read_foods():
@@ -88,6 +91,7 @@ async def read_foods():
                        "calories": df1["calories (g/amount)"], "protein": df1["protein (g/amount)"]})
     print(df2)
     return df2.to_json()
+
 
 @app.post('/sofia-diet/meal/CREATE')
 async def handle_meal_upload(meal=Body(...)):
@@ -102,64 +106,65 @@ async def handle_meal_upload(meal=Body(...)):
             pass
         else:
             recipe.append(Food(food["name"], float(food["cost"]),
-                               float(food["protein"]), float(food["calories"])))
-    meal = Meal(recipe,meal["mealName"])
-    print(meal)
+                               float(food["protein"]), float(food["calories"]), int(food["amount"])))
+    meal = Meal(meal["mealName"], recipe)
+
+    df1 = pd.read_excel("meals.xlsx")
+    df2 = pd.DataFrame(data={"Name": [meal.name], "Cost (£)": [meal.total["cost"]],
+                       "calories (g/amount)": [meal.total["calories"]], "protein (g/amount)": [meal.total["protein"]]})
+    df3 = pd.concat([df1, df2])
+    print(df3)
+    df3.to_excel("meals.xlsx", index=False)
+
+    print("meal created successfully ✅")
+
     return {'response': 'okay'}
 
-@app.post('/sofia-diet/meal/READ')
-async def handle_meal_upload(meal=Body(...)):
-    try:
-        meal: 'list[dict]' = json.loads(meal.decode())
-    except:
-        print(type(meal))
 
-    recipe = []  # a collection of foods
-    for food in meal["recipe"]:
-        if len(list(food.keys())) == 1:
-            pass
-        else:
-            recipe.append(Food(food["name"], float(food["cost"]),
-                               float(food["protein"]), float(food["calories"])))
-    meal = Meal(recipe,meal["mealName"])
-    print(meal)
-    return {'response': 'okay'}
+@app.get('/sofia-diet/meal/READ')
+async def handle_meal_upload():
+    df1 = pd.read_excel("meals.xlsx")
+    df2 = pd.DataFrame(data={"name": df1["Name"], "cost": df1["Cost (£)"],
+                       "calories": df1["calories (g/amount)"], "protein": df1["protein (g/amount)"]})
+    print(df2)
+    return df2.to_json()
+
 
 @app.post('/sofia-diet/diet/CREATE')
-async def handle_meal_upload(meal=Body(...)):
+async def handle_diet_upload(diet=Body(...)):
     try:
-        meal: 'list[dict]' = json.loads(meal.decode())
+        diet: 'list[dict]' = json.loads(diet.decode())
     except:
-        print(type(meal))
+        print(type(diet))
 
-    recipe = []  # a collection of foods
-    for food in meal["recipe"]:
-        if len(list(food.keys())) == 1:
-            pass
-        else:
-            recipe.append(Food(food["name"], float(food["cost"]),
-                               float(food["protein"]), float(food["calories"])))
-    meal = Meal(recipe,meal["mealName"])
-    print(meal)
+    df1 = pd.read_excel("diet.xlsx")
+    if len(df1["day"].values) >= 7:
+        df1 = pd.DataFrame([])
+
+    name = []
+    cost = []
+    calories = []
+    protein = []
+    amount = []
+    for meal in diet["meals"]:
+        name.append(meal["name"])
+        cost.append(meal["cost"])
+        calories.append(meal["calories"])
+        protein.append(meal["protein"])
+        amount.append(meal["amount"])
+    df2 = pd.DataFrame(data={"day": [diet["weekDay"]], "Name": name, "Cost (£)": cost, "Calories (g/amount)": calories,
+                       "protein (g/amount)": protein, "amount (g)": amount})
+
+    df3 = pd.concat([df1, df2])
+    df3.to_excel("diet.xlsx", index=False)
+
+    print(df3)
     return {'response': 'okay'}
 
-@app.post('/sofia-diet/diet/READ')
-async def handle_meal_upload(meal=Body(...)):
-    try:
-        meal: 'list[dict]' = json.loads(meal.decode())
-    except:
-        print(type(meal))
 
-    recipe = []  # a collection of foods
-    for food in meal["recipe"]:
-        if len(list(food.keys())) == 1:
-            pass
-        else:
-            recipe.append(Food(food["name"], float(food["cost"]),
-                               float(food["protein"]), float(food["calories"])))
-    meal = Meal(recipe,meal["mealName"])
-    print(meal)
-    return {'response': 'okay'}
+@app.get('/sofia-diet/diet/READ')
+async def get_diet_file():
+    return FileResponse("diet.xlsx", media_type="application/msexcel", filename="diet.xlsx")
 
 #----------------- DRAW-UML ----------------#
 

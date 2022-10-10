@@ -178,5 +178,5 @@ to convert the statements into sqlite3 friendly statements you can run
 
 - replace the `id INT NOT NULL AUTO_INCREMENT` in sql with the `id INTEGER PRIMARY KEY AUTOINCREMENT`
 - remove the alter statements at the bottom `ALTER TABLE Meal ADD CONSTRAINT meal_meals_foreign FOREIGN KEY(meals) REFERENCES Food(id);` with constraints to add this ` FOREIGN KEY(exercises) REFERENCES Exercise(id)`
-to the correct table
-- use ``cntrl + F2`` on ``);`` to add `` ''',''' `` and wrap the entire code with ``[''' ''']``
+  to the correct table
+- use `cntrl + F2` on `);` to add `''','''` and wrap the entire code with `[''' ''']`
