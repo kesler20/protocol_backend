@@ -1,97 +1,65 @@
+BASE_AMOUNT = 100  # g
 
 
-class Nutrition(dict):
-
-    def __init__(self):
-        pass
-
-    def __mul__(self, other):
-        if type(other) == int or type(other) == float:
-            self['Cost (£)'] *= other
-            self['protein (g/amount)'] *= other
-            self['calories (g/amount)'] *= other
-        return self
-
-    def __add__(self, other: dict):
-        if type(other) == type(self):
-            self['Cost (£)'] += other['Cost (£)']
-            self['protein (g/amount)'] += other['protein (g/amount)']
-            self['calories (g/amount)'] += other['calories (g/amount)']
-            return self
+def calculate_total(recipe) -> dict:
+    '''signature description'''
+    result = {}
+    for food in recipe:
+        if recipe.index(food) == 0:
+            result["cost"] = 0
+            result["protein"] = 0
+            result["calories"] = 0
+            result["cost"] += food.cost*food.amount/BASE_AMOUNT
+            result["protein"] += food.protein*food.amount/BASE_AMOUNT
+            result["calories"] += food.calories*food.amount/BASE_AMOUNT
         else:
-            raise TypeError
+            result["cost"] += food.cost*food.amount/BASE_AMOUNT
+            result["protein"] += food.protein*food.amount/BASE_AMOUNT
+            result["calories"] += food.calories*food.amount/BASE_AMOUNT
+    return result
 
 
-class Food(Nutrition):
+class Food(object):
     '''
-    Assumptions:
-    Units of amount assumes 1L = 1Kg of substance
-    Every protein/calorie is standardized per units of amount
-    Each food is assumed to have values corresponding ot (100g)
-
-    Params:
-    ---
-    name : str, name of the food
-    cost : float, cost of the food for 100g
-    protein: float, amount of proteins in food for 100g
-    calories: int, number of calories in 100g of the food
+    Food the unit created by te user which is a dictionary containing the following values
     '''
 
-    def __init__(self, name, cost, protein, calories):
-        self['Name'] = name
-        self['Cost (£)'] = cost
-        self['protein (g/amount)'] = protein
-        self['calories (g/amount)'] = calories
-
-
-class Meal(Nutrition):
-    '''
-    A Meal is a collection of foods
-    Params:
-    ---
-    recipe : list, a list of foods
-    '''
-
-    def __init__(self, recipe: 'list[Food]', name: str):
-        self.recipe = recipe
+    def __init__(self, name: str,  cost: float,  protein: float,  calories: int) -> None:
         self.name = name
-    
-    def __repr__(self) -> str:
-        return f'''
-        {self.name}
-        {self.recipe}
-        '''
-
-    @property
-    def get_total(self):
-        first_food = self.recipe[0]
-        for food in self.recipe[1:]:
-            first_food += food
-        first_food["Name"] = self.name
-        return first_food
+        self.cost = cost
+        self.protein = protein
+        self.calories = calories
+        self.amount = BASE_AMOUNT
 
 
-class Diet(Nutrition):
+class Meal(object):
+    '''
+    Meal, a meal is a collection of foods which has also a name, this has a property of total which
+    represents a dictionary of the following key value pairs
+    '''
 
-    def __init__(self, meals: str,  week_day: str):
-        self.week_day = week_day
+    def __init__(self, name: str,  recipe: 'list[Food]') -> None:
+        self.name = name
+        self.recipe = recipe
+        self.total = calculate_total(recipe)
+
+
+class Diet(object):
+    '''
+    Diet, a diet is a collection of meals which has a day of the week id, 
+    therefore there can only be 7 diets in a week
+    '''
+
+    def __init__(self, day: str,  meals: 'list[Meal]') -> None:
+        self.day = day
         self.meals = meals
-
-    @property
-    def get_total(self):
-        first_meal = self.meals[0]
-        for meal in self.meals[1:]:
-            first_meal += meal
-        first_meal["Name"] = self.week_day
-        return first_meal
+        self.total = calculate_total(meals)
 
 
 if __name__ == "__main__":
     test_food1 = Food("food1", 0.1, 0.2, 20)
+    test_food1.amount = 75
     test_food2 = Food("food2", 0.2, 0.3, 22)
-    test_meal1 = Meal([test_food1, test_food2], "meal1")
-    test_meal2 = Meal([test_food1], "meal2")
-    test_diet = Diet([test_meal1.get_total, test_meal2.get_total], "diet1")
-    print("food", test_food1)
-    print("meal", test_meal1.get_total)
-    print("diet", test_diet.get_total)
+    test_food2.amount = 89
+    meal1 = Meal("meal1", [test_food1, test_food2])
+    print(meal1.total)

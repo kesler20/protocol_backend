@@ -27,7 +27,7 @@ of interest in lowercase
 
 # ---------------------------------------------------#
 #                                                    #
-#     INTIIALISE APPLICATION AND CONFIGURATIONS      #
+#     INITIALIZE APPLICATION AND CONFIGURATIONS      #
 #                                                    #
 # ---------------------------------------------------#
 
@@ -70,7 +70,8 @@ async def handle_upload(food=Body(...)):
         print(type(food))
 
     food = Food(food["name"], [float(food["cost"])], [
-                float(food["protein"])], [float(food["calories"])])
+                float(food["protein"])], [int(food["calories"])])
+
     df1 = pd.read_excel("food.xlsx")
     df2 = pd.DataFrame(data=food)
     df3 = pd.concat([df1, df2])
@@ -80,7 +81,6 @@ async def handle_upload(food=Body(...)):
 
     return {'response': 'okay'}
 
-
 @app.get('/sofia-diet/food/READ')
 async def read_foods():
     df1 = pd.read_excel("food.xlsx")
@@ -88,7 +88,6 @@ async def read_foods():
                        "calories": df1["calories (g/amount)"], "protein": df1["protein (g/amount)"]})
     print(df2)
     return df2.to_json()
-
 
 @app.post('/sofia-diet/meal/CREATE')
 async def handle_meal_upload(meal=Body(...)):
@@ -98,21 +97,68 @@ async def handle_meal_upload(meal=Body(...)):
         print(type(meal))
 
     recipe = []  # a collection of foods
-    for food in meal:
+    for food in meal["recipe"]:
         if len(list(food.keys())) == 1:
             pass
         else:
             recipe.append(Food(food["name"], float(food["cost"]),
                                float(food["protein"]), float(food["calories"])))
-
-    meal = Meal(recipe, meal[-1]["name"])
+    meal = Meal(recipe,meal["mealName"])
     print(meal)
-    # df1 = pd.read_excel("meal.xlsx")
-    # df2 = pd.DataFrame(data=meal)
-    # df3 = pd.concat([df1, df2])
-    # df3.to_excel("meal.xlsx", index=False)
-    # print("meal created successfully ✅")
+    return {'response': 'okay'}
 
+@app.post('/sofia-diet/meal/READ')
+async def handle_meal_upload(meal=Body(...)):
+    try:
+        meal: 'list[dict]' = json.loads(meal.decode())
+    except:
+        print(type(meal))
+
+    recipe = []  # a collection of foods
+    for food in meal["recipe"]:
+        if len(list(food.keys())) == 1:
+            pass
+        else:
+            recipe.append(Food(food["name"], float(food["cost"]),
+                               float(food["protein"]), float(food["calories"])))
+    meal = Meal(recipe,meal["mealName"])
+    print(meal)
+    return {'response': 'okay'}
+
+@app.post('/sofia-diet/diet/CREATE')
+async def handle_meal_upload(meal=Body(...)):
+    try:
+        meal: 'list[dict]' = json.loads(meal.decode())
+    except:
+        print(type(meal))
+
+    recipe = []  # a collection of foods
+    for food in meal["recipe"]:
+        if len(list(food.keys())) == 1:
+            pass
+        else:
+            recipe.append(Food(food["name"], float(food["cost"]),
+                               float(food["protein"]), float(food["calories"])))
+    meal = Meal(recipe,meal["mealName"])
+    print(meal)
+    return {'response': 'okay'}
+
+@app.post('/sofia-diet/diet/READ')
+async def handle_meal_upload(meal=Body(...)):
+    try:
+        meal: 'list[dict]' = json.loads(meal.decode())
+    except:
+        print(type(meal))
+
+    recipe = []  # a collection of foods
+    for food in meal["recipe"]:
+        if len(list(food.keys())) == 1:
+            pass
+        else:
+            recipe.append(Food(food["name"], float(food["cost"]),
+                               float(food["protein"]), float(food["calories"])))
+    meal = Meal(recipe,meal["mealName"])
+    print(meal)
     return {'response': 'okay'}
 
 #----------------- DRAW-UML ----------------#
