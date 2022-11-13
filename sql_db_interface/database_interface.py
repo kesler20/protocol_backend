@@ -21,20 +21,33 @@ class DatabaseInterface(object):
 
     Properties:
     * client - the client is an SQLClient object yielded by the context manager
+    this can be initialized as follows
+
+    ```python
+    client = DatabaseClient("my_database_path.db")
+    db = DatabaseInterface(db)
+    ```
 
     The Database Interface supports CRUD operations on tables with the following format:
 
-    ```sql
-    test_table_parent
-    id integer primary_key autoincrement
-    name varchar(255) not null
-    ```
-
-    ```sql
-    test_table_child
-    id integer primary_key autoincrement
-    name varchar(255) not null
-    foreign key (parent_id) references test_table_parent(id)
+    ```python
+    sql_statements = ["""
+    CREATE TABLE parent (
+        id integer primary key autoincrement,
+        name varchar(255)
+    );
+    """,
+    """
+    CREATE TABLE child (
+        id integer primary key autoincrement,
+        name varchar(255),
+        parent_id integer not null,
+        foreign key (parent_id) references parent(id) 
+    );
+    """
+    ]
+    for statement in sql_statement:
+        print(db.run_query("*"))
     ```
 
     the type of data to insert is
@@ -120,7 +133,13 @@ class DatabaseInterface(object):
         params:
         * columns - tuple, a tuple containing the columns you want to insert into
         * values - tuple, tuples of values that you want to insert into the table
-        * table_name - str, the name of the table which we want to modify'''
+        * table_name - str, the name of the table which we want to modify
+        
+        for instance
+        ```python
+        db.create_values("(session_id)", """("value to insert")""", "Session")
+        ```
+        '''
 
         sql_statement = f'''INSERT INTO {table_name} {columns} VALUES {values}'''
         with self.client as client:
