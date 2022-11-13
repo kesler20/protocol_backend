@@ -1,16 +1,15 @@
-
 /*
-* Object Description
-*/
+ * Object Description
+ */
 export default class Completed {
-    constructor( Valid) {
-        this.Valid = Valid;
-    }
-    
-    /*
-    * signature description
-    */
-    this() {
-        return;
-    }
+  constructor(Valid) {
+    this.Valid = Valid;
+  }
+
+  /*
+   * signature description
+   */
+  this() {
+    return;
+  }
 }

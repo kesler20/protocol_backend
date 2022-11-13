@@ -3,8 +3,11 @@ import os
 import unittest
 from pathlib import Path
 from os import path
-from src.protocol_backend.sql_db_interface.database_client import DatabaseClient
-
+try:
+    from src.protocol_backend.sql_db_interface.database_client import DatabaseClient
+except ModuleNotFoundError as err:
+    print(err)
+    from protocol_backend.sql_db_interface.database_client import DatabaseClient
 
 TEST_DATABASE_PATH = "test_database.db"
 if path.exists(TEST_DATABASE_PATH):

@@ -1,7 +1,12 @@
 import sqlite3
-from src.protocol_backend.sql_db_interface.database_client import DatabaseClient
 import unittest
-from src.protocol_backend.sql_db_interface.database_interface import DatabaseInterface
+try:
+    from src.protocol_backend.sql_db_interface.database_client import DatabaseClient
+    from src.protocol_backend.sql_db_interface.database_interface import DatabaseInterface
+except ModuleNotFoundError:
+    from protocol_backend.sql_db_interface.database_client import DatabaseClient
+    from protocol_backend.sql_db_interface.database_interface import DatabaseInterface
+    
 from test_database_client import TEST_DATABASE_PATH
 
 print("Testing:" + DatabaseInterface.__doc__)
