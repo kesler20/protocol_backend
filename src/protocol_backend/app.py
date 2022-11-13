@@ -1,4 +1,4 @@
-from models.diet import Food, Meal
+from src.protocol_backend.models.diet import Food, Meal
 import os
 import pandas as pd
 # FastAPI imports
@@ -9,11 +9,11 @@ from fastapi.responses import RedirectResponse, StreamingResponse
 from starlette.requests import Request
 import json
 import pickle
-from fast_prototyping.main import ClassBuilder
-from fast_prototyping.mainjs import JsClassBuilder
-from fast_prototyping.test_main import TestClassBuilder
-from sql_db_interface.database_client import DatabaseClient
-from sql_db_interface.database_interface import DatabaseInterface
+from src.protocol_backend.fast_prototyping.main import ClassBuilder
+from src.protocol_backend.fast_prototyping.mainjs import JsClassBuilder
+from src.protocol_backend.fast_prototyping.test_main import TestClassBuilder
+from src.protocol_backend.sql_db_interface.database_client import DatabaseClient
+from src.protocol_backend.sql_db_interface.database_interface import DatabaseInterface
 
 '''
 The application backend will take requrest from any client "see origins list set as *"
