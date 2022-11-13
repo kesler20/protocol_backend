@@ -6,8 +6,8 @@ try:
 except ModuleNotFoundError:
     from protocol_backend.sql_db_interface.database_client import DatabaseClient
     from protocol_backend.sql_db_interface.database_interface import DatabaseInterface
-    
-from test_database_client import TEST_DATABASE_PATH
+
+from tests.test_database_client import TEST_DATABASE_PATH
 
 print("Testing:" + DatabaseInterface.__doc__)
 
