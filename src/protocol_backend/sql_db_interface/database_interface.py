@@ -221,16 +221,16 @@ class DatabaseInterface(object):
             client.cursor.execute(sql_statement)
             client.connection.commit()
 
-    def delete_value(self, table_name: str, primary_key: int, parent_id: str) -> None:
+    def delete_value(self, table_name: str, parent_id_value: int, parent_id_key: str) -> None:
         '''Delete a value from the table
 
         param:
         * table_name - str, the name of the table we want to read the values of
-        * primary_key - int, the primary key of the value that we want to retrieve
-        * parent_id - the name of the foreign key which references to the parent table
+        * parent_id_value - int, the primary key of the value that we want to retrieve
+        * parent_id_key - the name of the foreign key which references to the parent table
         '''
 
-        sql_statement = f'''DELETE FROM {table_name} WHERE {parent_id} = {primary_key}'''
+        sql_statement = f'''DELETE FROM {table_name} WHERE {parent_id_key} = {parent_id_value}'''
         with self.client as client:
             print(sql_statement)
             client.cursor.execute(sql_statement)

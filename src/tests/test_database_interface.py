@@ -64,7 +64,7 @@ class Test_DatabaseInterface(unittest.TestCase):
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name VARCHAR(255) NOT NULL,
             parent_id INTEGER NOT NULL,
-            FOREIGN KEY (parent_id) REFERENCES test_table_parent(id)   
+            FOREIGN KEY (parent_id) REFERENCES test_table_parent(id)
         )'''
 
         insert_some_values_to_the_database_to_delete = '''INSERT INTO test_table_child (name, parent_id) VALUES (? , ?)'''
@@ -209,14 +209,14 @@ class Test_DatabaseInterface(unittest.TestCase):
     def test_read_value(self) -> str:
         '''testing reading a value from the table'''
         value = self.database_interface.read_value(
-            "name", "test_table_child", 1)
+            "name", "test_table_child", 1,1)
         self.assertEqual(value[0], data_1[0][0])
 
     def test_update_value(self) -> None:
         '''testing updating a value from the table'''
         value = "test data n"
         self.database_interface.update_value(
-            "name", "test_table_child", 1, value)
+            "name", "test_table_child", 1, value,1)
 
         with self.client as client:
             updated_values = client.cursor.execute(
@@ -229,8 +229,8 @@ class Test_DatabaseInterface(unittest.TestCase):
 
     def test_delete_value(self) -> None:
         '''testing delete a value from the table'''
-
-        self.database_interface.delete_value("test_table_child", 2)
+        self.database_interface.create_values("(name, parent_id)","""("name",2)""","test_table_child")
+        self.database_interface.delete_value("test_table_child",2,"parent_id")
 
         with self.client as client:
             values = client.cursor.execute(
