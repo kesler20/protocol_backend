@@ -1,0 +1,13 @@
+README.md
+pyproject.toml
+setup.cfg
+setup.py
+src/protocol_backend/app.py
+src/protocol_backend/automatic_db_update.py
+src/protocol_backend/py.typed
+src/protocol_backend.egg-info/PKG-INFO
+src/protocol_backend.egg-info/SOURCES.txt
+src/protocol_backend.egg-info/dependency_links.txt
+src/protocol_backend.egg-info/not-zip-safe
+src/protocol_backend.egg-info/requires.txt
+src/protocol_backend.egg-info/top_level.txt
