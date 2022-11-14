@@ -93,6 +93,16 @@ async def read_foods():
     return df2.to_json()
 
 
+@app.delete('/sofia-diet/food/DELETE')
+async def delete_meals(mealID=Body(...)):
+    df = pd.read_excel("food.xlsx")
+    df.filter(items=list(filter(lambda item: item != None, [None if i == mealID else i for i,
+              row in enumerate(df["Name"])])), axis=0).to_excel("food.xlsx", index=False)
+              
+    return {'response': 'okay'}
+
+
+
 @app.post('/sofia-diet/meal/CREATE')
 async def handle_meal_upload(meal=Body(...)):
     try:
@@ -130,6 +140,15 @@ async def handle_meal_upload():
     return df2.to_json()
 
 
+@app.delete('/sofia-diet/meal/DELETE')
+async def delete_meals(mealID=Body(...)):
+    df = pd.read_excel("meals.xlsx")
+    df.filter(items=list(filter(lambda item: item != None, [None if i == mealID else i for i,
+              row in enumerate(df["Name"])])), axis=0).to_excel("meals.xlsx", index=False)
+
+    return {'response': 'okay'}
+
+
 @app.post('/sofia-diet/diet/CREATE')
 async def handle_diet_upload(diet=Body(...)):
     try:
@@ -152,7 +171,7 @@ async def handle_diet_upload(diet=Body(...)):
         calories.append(meal["calories"])
         protein.append(meal["protein"])
         amount.append(meal["amount"])
-    df2 = pd.DataFrame(data={"day": [diet["weekDay"]], "Name": name, "Cost (£)": cost, "Calories (g/amount)": calories,
+    df2 = pd.DataFrame(data={"day": [diet["weekDay"] for _ in name], "Name": name, "Cost (£)": cost, "Calories (g/amount)": calories,
                        "protein (g/amount)": protein, "amount (g)": amount})
 
     df3 = pd.concat([df1, df2])
