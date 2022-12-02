@@ -388,6 +388,8 @@ class GithubRepository(object):
         if _type == "py":
             self.workflow_ui.pp("running tests using pytest 🐍🧪")
             os.system("python -m pytest src/tests")
+            self.workflow_ui.pp("checking types 🐍📰")
+            os.system("mypy src")
         
         self.workflow_ui.pp("formatting code using prettier ✨")
         os.system("prettier -w .")

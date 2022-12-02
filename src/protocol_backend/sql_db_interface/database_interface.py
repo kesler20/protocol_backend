@@ -3,8 +3,12 @@ try:
     from src.protocol_backend.sql_db_interface.database_client import DatabaseClient
     from src.protocol_backend.sql_db_interface.table_schema import SQL_STATEMENTS
 except ModuleNotFoundError as err:
-    from database_client import DatabaseClient
-    from table_schema import SQL_STATEMENTS
+    try:
+        from database_client import DatabaseClient
+        from table_schema import SQL_STATEMENTS
+    except ModuleNotFoundError:
+        from protocol_backend.sql_db_interface.database_client import DatabaseClient
+        from protocol_backend.sql_db_interface.table_schema import SQL_STATEMENTS
 
 '''The database interface should allow you to implement different database clients from a single Object
 The notes for the SQL queries can be found here 
